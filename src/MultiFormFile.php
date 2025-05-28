@@ -28,9 +28,9 @@ class MultiFormFile
     public function __construct(
         array $paths,
         ?string $contentType = null,
-        // 默认 10MB/sec 突发速率
+        // 默认突发速率
         int $bucketSize = 1024 * 1024 * 1024 * 10,
-        // 默认 10MB/sec 持续速率
+        // 默认持续速率
         int $tokensPerInterval = 1024 * 1024 * 1024 * 10,
         int $startPosition = 0,
         int $readLength = -1,
@@ -71,7 +71,7 @@ class MultiFormFile
      */
     public static function withBandwidthLimit(
         array $paths, 
-        int $maxBytesPerSecond = 1024 * 1024, // 1MB/s 默认
+        int $maxBytesPerSecond = 1024 * 1024 * 1024, // 1MB/s 默认
         int $chunkSizeKB = 1024, // 1MB 块大小
         ?string $contentType = null
     ): self {

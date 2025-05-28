@@ -276,7 +276,7 @@ new FormFile(
     ?string $filename = null,        // 自定义文件名
     ?string $contentType = null,     // 自定义内容类型
     int $bucketSize = 10485760,      // 令牌桶大小(10MB)
-    int $tokensPerInterval = 10485760, // 每秒令牌数(10MB/s)
+    int $tokensPerInterval = 1048576, // 每秒令牌数(1MB/s)
     int $startPosition = 0,          // 读取起始位置
     int $readLength = -1,            // 读取长度(-1=全部)
     int $chunkSizeKB = 1024          // 数据块大小(1MB)

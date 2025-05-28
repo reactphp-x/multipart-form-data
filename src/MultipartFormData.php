@@ -96,7 +96,7 @@ class MultipartFormData
         }
     }
 
-    public function addFile(string $name, string $path, ?string $contentType = null, ?string $filename = null, int $bucketSize = 1024 * 1024 * 1024, int $tokensPerInterval = 1024 * 1024 * 1024, int $startPosition = 0, int $readLength = -1, int $chunkSizeKB = 1024): void
+    public function addFile(string $name, string $path, ?string $contentType = null, ?string $filename = null, int $bucketSize = 1024 * 1024 * 1024 * 10, int $tokensPerInterval = 1024 * 1024 * 1024 * 10, int $startPosition = 0, int $readLength = -1, int $chunkSizeKB = 1024): void
     {
         $this->fields[$name] = new FormFile(
             path: $path,
@@ -110,7 +110,7 @@ class MultipartFormData
         );
     }
 
-    public function addMultiFile(string $name, array $paths, ?string $contentType = null, int $bucketSize = 1024 * 1024 * 1024, int $tokensPerInterval = 1024 * 1024 * 1024, int $startPosition = 0, int $readLength = -1, int $chunkSizeKB = 1024): void
+    public function addMultiFile(string $name, array $paths, ?string $contentType = null, int $bucketSize = 1024 * 1024 * 1024 * 10, int $tokensPerInterval = 1024 * 1024 * 1024 * 10, int $startPosition = 0, int $readLength = -1, int $chunkSizeKB = 1024): void
     {
         $this->fields[$name] = new MultiFormFile(paths: $paths, contentType: $contentType, bucketSize: $bucketSize, tokensPerInterval: $tokensPerInterval, startPosition: $startPosition, readLength: $readLength, chunkSizeKB: $chunkSizeKB);
     }
