@@ -29,32 +29,71 @@ class MultipartFormData
             throw new Exception('Failed to obtain random boundary', 0, $exception);
         }
 
+        // 分离文件字段和普通字段
+        $regularFields = [];
+        
         foreach ($fields as $name => $field) {
             if ($field instanceof FormField || $field instanceof FormFile || $field instanceof MultiFormFile) {
-                $this->fields[$name] = $field;
-            } 
-            // elseif (is_file($field)) {
-            //     $this->addFile($name, $field);
-            // } 
-            else {
-                $this->addField($name, $field);
+                $this->fields[(string)$name] = $field;
+            } else {
+                // 收集非文件字段到数组中，稍后用 http_build_query 处理
+                $regularFields[$name] = $field;
             }
+        }
+        
+        // 使用 http_build_query 处理所有非文件字段
+        if (!empty($regularFields)) {
+            $this->processRegularFields($regularFields);
         }
     }
 
     public function addField(
         string $name,
-        string $content,
+        string|array $content,
         ?int $contentLength = null,
         ?string $contentType = null,
         ?string $filename = null,
     ): void {
-        $this->fields[$name] = new FormField(
-            content: $content,
-            contentLength: $contentLength,
-            contentType: $contentType,
-            filename: $filename,
-        );
+        // 如果内容是数组，使用 http_build_query 处理
+        if (is_array($content)) {
+            $this->processRegularFields([$name => $content]);
+        } else {
+            // 简单字符串字段
+            $this->fields[$name] = new FormField(
+                content: $content,
+                contentLength: $contentLength,
+                contentType: $contentType,
+                filename: $filename,
+            );
+        }
+    }
+
+    /**
+     * 使用 http_build_query 处理普通字段（包括多维数组）
+     */
+    private function processRegularFields(array $fields): void
+    {
+        // 使用 http_build_query 将数组转换为查询字符串格式
+        $queryString = http_build_query($fields);
+        
+        // 通过 & 分割查询字符串，然后解析每个键值对
+        $pairs = explode('&', $queryString);
+        
+        foreach ($pairs as $pair) {
+            if (empty($pair)) continue;
+            
+            // 通过 = 分割键值对
+            $parts = explode('=', $pair, 2);
+            if (count($parts) === 2) {
+                $key = urldecode($parts[0]);
+                $value = urldecode($parts[1]);
+                
+                // 添加为 FormField
+                $this->fields[$key] = new FormField(
+                    content: $value,
+                );
+            }
+        }
     }
 
     public function addFile(string $name, string $path, ?string $contentType = null, ?string $filename = null, int $bucketSize = 1024 * 1024 * 1024, int $tokensPerInterval = 1024 * 1024 * 1024, int $p = 0, int $length = -1): void
@@ -100,6 +139,7 @@ class MultipartFormData
         \React\EventLoop\Loop::futureTick(async(function () use ($stream) {
             try {
                 foreach ($this->fields as $name => $field) {
+                    $name = (string)$name; // 确保 $name 是字符串类型
                     if ($field instanceof FormField) {
                         $body = <<<BODY
 --{$this->boundary}\r
