@@ -96,7 +96,7 @@ class MultipartFormData
         }
     }
 
-    public function addFile(string $name, string $path, ?string $contentType = null, ?string $filename = null, int $bucketSize = 1024 * 1024 * 1024, int $tokensPerInterval = 1024 * 1024 * 1024, int $p = 0, int $length = -1): void
+    public function addFile(string $name, string $path, ?string $contentType = null, ?string $filename = null, int $bucketSize = 1024 * 1024 * 1024, int $tokensPerInterval = 1024 * 1024 * 1024, int $startPosition = 0, int $readLength = -1, int $chunkSizeKB = 1024): void
     {
         $this->fields[$name] = new FormFile(
             path: $path,
@@ -104,21 +104,15 @@ class MultipartFormData
             contentType: $contentType,
             bucketSize: $bucketSize,
             tokensPerInterval: $tokensPerInterval,
-            p: $p,
-            length: $length,
+            startPosition: $startPosition,
+            readLength: $readLength,
+            chunkSizeKB: $chunkSizeKB,
         );
     }
 
-    public function addMultiFile(string $name, array $paths, ?string $contentType = null, int $bucketSize = 1024 * 1024 * 1024, int $tokensPerInterval = 1024 * 1024 * 1024, int $p = 0, int $length = -1): void
+    public function addMultiFile(string $name, array $paths, ?string $contentType = null, int $bucketSize = 1024 * 1024 * 1024, int $tokensPerInterval = 1024 * 1024 * 1024, int $startPosition = 0, int $readLength = -1, int $chunkSizeKB = 1024): void
     {
-        $this->fields[$name] = new MultiFormFile(
-            paths: $paths,
-            contentType: $contentType,
-            bucketSize: $bucketSize,
-            tokensPerInterval: $tokensPerInterval,
-            p: $p,
-            length: $length,
-        );
+        $this->fields[$name] = new MultiFormFile(paths: $paths, contentType: $contentType, bucketSize: $bucketSize, tokensPerInterval: $tokensPerInterval, startPosition: $startPosition, readLength: $readLength, chunkSizeKB: $chunkSizeKB);
     }
 
     public function getHeaders(): array
@@ -132,10 +126,6 @@ class MultipartFormData
     {
         $stream = new ThroughStream();
 
-        $stream->on('data', function ($data) {
-            echo $data;
-        });
-        
         \React\EventLoop\Loop::futureTick(async(function () use ($stream) {
             try {
                 foreach ($this->fields as $name => $field) {
