@@ -1,0 +1,19 @@
+{
+    "name": "reactphp-x/multipart-form-data",
+    "require": {
+        "react/http": "^1.11",
+        "reactphp-x/bandwidth": "^0.0.2"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "ReactphpX\\MultipartFormData\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "wpjscc",
+            "email": "wpjscc@gmail.com"
+        }
+    ]
+}

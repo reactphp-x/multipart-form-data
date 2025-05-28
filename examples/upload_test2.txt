@@ -1,0 +1,4 @@
+This is the content of upload test file 2.
+Different content from file 1.
+This file will be combined with file 1 in avatar3 upload method.
+End of file 2.
