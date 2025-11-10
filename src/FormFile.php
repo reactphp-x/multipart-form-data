@@ -27,9 +27,9 @@ class FormFile
         private ?string $filename = null,
         private ?string $contentType = null,
         // 默认突发速率
-        private int $bucketSize = 1024 * 1024 * 1024 * 10,
+        private int $bucketSize = 1024 * 1024 * 10,
         // 默认持续速率  
-        private int $tokensPerInterval = 1024 * 1024 * 1024 * 10,
+        private int $tokensPerInterval = 1024 * 1024 * 1,
         private int $startPosition = 0,
         private int $readLength = -1,
         private int $chunkSizeKB = 1024
